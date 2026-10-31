@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark"><title>EV Market Performance Insights</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>:root{
+  --paper:#F2F4EF; --surface:#FFFFFF; --ink:#101B2D; --mute:#5E687A;
+  --line:#D6DBD3; --cobalt:#2B4BFF; --charge:#CFEA4A; --on-cobalt:#FFFFFF;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0C1320; --surface:#141E30; --ink:#EDF0F5; --mute:#9AA5B8;
+    --line:#26324A; --cobalt:#7C93FF; --charge:#CFEA4A; --on-cobalt:#0C1320;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0C1320; --surface:#141E30; --ink:#EDF0F5; --mute:#9AA5B8;
+  --line:#26324A; --cobalt:#7C93FF; --charge:#CFEA4A; --on-cobalt:#0C1320;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font:400 1rem/1.6 "IBM Plex Sans",system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque","IBM Plex Sans",sans-serif;line-height:1.1;margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--cobalt);outline-offset:3px}
+
+.nav{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;
+  padding:.75rem clamp(1rem,4vw,3rem);background:var(--paper);border-bottom:1px solid var(--line)}
+.brand{font:700 1.1rem "Bricolage Grotesque",sans-serif;text-decoration:none}
+.nav nav{display:flex;gap:1.25rem;align-items:center}
+.nav nav a{text-decoration:none;color:var(--mute)}
+.nav nav a:hover{color:var(--ink)}
+
+main{max-width:1100px;margin:0 auto;padding:0 clamp(1rem,4vw,2rem)}
+.hero{padding:clamp(3rem,10vw,7rem) 0 3rem}
+.hero h1{font-size:clamp(2.5rem,7vw,5rem);font-weight:700;max-width:14ch;letter-spacing:-.02em}
+.lede{font-size:1.2rem;max-width:56ch;color:var(--mute);margin:1.25rem 0 2rem}
+
+.meter{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;max-width:520px;
+  padding:6px;border:2px solid var(--ink);border-radius:10px;position:relative}
+.meter::after{content:"";position:absolute;right:-10px;top:30%;height:40%;width:6px;
+  background:var(--ink);border-radius:0 3px 3px 0}
+.meter span{height:34px;border-radius:4px;background:var(--charge);transform-origin:left;
+  animation:charge .5s ease-out both}
+.meter span:nth-child(1){animation-delay:.05s}.meter span:nth-child(2){animation-delay:.12s}
+.meter span:nth-child(3){animation-delay:.19s}.meter span:nth-child(4){animation-delay:.26s}
+.meter span:nth-child(5){animation-delay:.33s}.meter span:nth-child(6){animation-delay:.40s}
+.meter span:nth-child(7){animation-delay:.47s}.meter span:nth-child(8){animation-delay:.54s}
+.meter span:nth-child(9){animation-delay:.61s}
+@keyframes charge{from{opacity:0;transform:scaleX(.2)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.meter span{animation:none}}
+.meter-label{margin:.9rem 0 2rem;color:var(--mute)}
+
+.actions{display:flex;gap:.75rem;flex-wrap:wrap}
+.btn{display:inline-block;padding:.7rem 1.3rem;border-radius:8px;background:var(--cobalt);
+  color:var(--on-cobalt);text-decoration:none;font-weight:500;border:2px solid var(--cobalt)}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
+.btn.small{padding:.35rem .9rem}
+.nav nav a.btn{color:var(--on-cobalt)}
+
+.block{padding:3rem 0;border-top:1px solid var(--line)}
+.block h2{font-size:clamp(1.75rem,4vw,2.5rem)}
+.sub{color:var(--mute);margin:.5rem 0 1.5rem;max-width:60ch}
+.frame{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  min-height:420px;overflow:hidden}
+.frame tableau-viz{display:block;width:100%}
+.empty{padding:3rem 1.5rem;text-align:center;color:var(--mute);max-width:52ch;margin:auto}
+.empty strong{color:var(--ink)}
+code{background:var(--paper);padding:.1rem .35rem;border-radius:4px;font-size:.9em}
+
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1.5rem 1rem;
+  margin:0 0 2.5rem}
+.facts dt{color:var(--mute);font-size:.9rem}
+.facts dd{margin:0;font:700 1.8rem "Bricolage Grotesque",sans-serif}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2.5rem}
+.two h3{font-size:1.15rem;margin-bottom:1rem}
+.bars{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
+.bars li{display:grid;grid-template-columns:7.5rem 1fr 3.5rem;gap:.75rem;align-items:center;font-size:.95rem}
+.track{height:14px;background:var(--line);border-radius:4px;overflow:hidden}
+.fill{display:block;height:100%;background:var(--cobalt)}
+.fill.alt{background:var(--ink)}
+.val{text-align:right;font-variant-numeric:tabular-nums}
+.note{color:var(--mute);font-size:.9rem;margin-top:1rem}
+.repo{padding-bottom:5rem}
+footer{text-align:center;color:var(--mute);padding:2rem 1rem;border-top:1px solid var(--line)}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}.nav{top:env(safe-area-inset-top,0px)}</style>
+  
+  
+
+</head>
+<body>
+  
+<header class="nav">
+  <a class="brand" href="#top">EV Market Insights</a>
+  <nav>
+    <a href="#dashboard">Dashboard</a>
+    <a href="#story">Story</a>
+    <a href="#data">Data</a>
+    <a class="btn small" href="https://github.com/mahaksahu01/Electric-Vehicle-Market-Performance-Insights" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <h1>What drives the electric vehicle market?</h1>
+    <p class="lede">A Tableau analysis of the global EV market: who sells the most, how demand differs by region, and how battery technology relates to price and range.</p>
+    <div class="meter" role="img" aria-label="9 visualizations built in Tableau">
+      <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <p class="meter-label">9 visualizations, 1 dashboard, 1 data story</p>
+    <div class="actions">
+      <a class="btn" href="#dashboard">Open the dashboard</a>
+      <a class="btn ghost" href="#story">Read the story</a>
+    </div>
+  </section>
+
+  <section id="dashboard" class="block">
+    <h2>Interactive dashboard</h2>
+    <p class="sub">Filter by region, manufacturer and battery type directly in the view.</p>
+    <div class="frame">
+  
+    <div class="empty">
+      <p><strong>Dashboard not connected yet.</strong></p>
+      <p>Publish it to Tableau Public, then set the link in <code>app.py</code> or the
+         <code>TABLEAU_DASHBOARD_URL</code> environment variable.</p>
+    </div>
+  
+</div>
+  </section>
+
+  <section id="story" class="block">
+    <h2>Data story</h2>
+    <p class="sub">The same findings, told step by step.</p>
+    <div class="frame">
+  
+    <div class="empty">
+      <p><strong>Story not connected yet.</strong></p>
+      <p>Publish it to Tableau Public, then set the link in <code>app.py</code> or the
+         <code>TABLEAU_STORY_URL</code> environment variable.</p>
+    </div>
+  
+</div>
+  </section>
+
+  <section id="data" class="block">
+    <h2>The data behind it</h2>
+    <p class="sub">Figures below are calculated from the training file in this project.</p>
+    <dl class="facts">
+      <div><dt>Training rows</dt><dd>200,000</dd></div>
+      <div><dt>Test rows</dt><dd>100,000</dd></div>
+      <div><dt>Columns</dt><dd>37</dd></div>
+      <div><dt>Manufacturers</dt><dd>200</dd></div>
+      <div><dt>Average price</dt><dd>$64,921</dd></div>
+      <div><dt>Average range</dt><dd>325 km</dd></div>
+    </dl>
+
+    <div class="two">
+      <div>
+        <h3>Annual sales by region (million units)</h3>
+        <ul class="bars">
+          
+          <li>
+            <span class="name">South Asia</span>
+            <span class="track"><span class="fill" style="width: 100.0%"></span></span>
+            <span class="val">224.0</span>
+          </li>
+          
+          <li>
+            <span class="name">Latin America</span>
+            <span class="track"><span class="fill" style="width: 99.7%"></span></span>
+            <span class="val">223.4</span>
+          </li>
+          
+          <li>
+            <span class="name">North America</span>
+            <span class="track"><span class="fill" style="width: 99.5%"></span></span>
+            <span class="val">222.8</span>
+          </li>
+          
+          <li>
+            <span class="name">Middle East</span>
+            <span class="track"><span class="fill" style="width: 98.8%"></span></span>
+            <span class="val">221.2</span>
+          </li>
+          
+          <li>
+            <span class="name">Asia Pacific</span>
+            <span class="track"><span class="fill" style="width: 98.7%"></span></span>
+            <span class="val">221.1</span>
+          </li>
+          
+          <li>
+            <span class="name">Africa</span>
+            <span class="track"><span class="fill" style="width: 98.5%"></span></span>
+            <span class="val">220.7</span>
+          </li>
+          
+          <li>
+            <span class="name">Europe</span>
+            <span class="track"><span class="fill" style="width: 97.1%"></span></span>
+            <span class="val">217.5</span>
+          </li>
+          
+        </ul>
+        <p class="note">Bars start at zero. Regions sit within about 3% of each other in this file.</p>
+      </div>
+      <div>
+        <h3>Battery type share of models</h3>
+        <ul class="bars">
+          
+          <li>
+            <span class="name">NMC</span>
+            <span class="track"><span class="fill alt" style="width: 33.8%"></span></span>
+            <span class="val">33.8%</span>
+          </li>
+          
+          <li>
+            <span class="name">LFP</span>
+            <span class="track"><span class="fill alt" style="width: 32.0%"></span></span>
+            <span class="val">32.0%</span>
+          </li>
+          
+          <li>
+            <span class="name">NCA</span>
+            <span class="track"><span class="fill alt" style="width: 17.0%"></span></span>
+            <span class="val">17.0%</span>
+          </li>
+          
+          <li>
+            <span class="name">Sodium-Ion</span>
+            <span class="track"><span class="fill alt" style="width: 10.0%"></span></span>
+            <span class="val">10.0%</span>
+          </li>
+          
+          <li>
+            <span class="name">Solid-State</span>
+            <span class="track"><span class="fill alt" style="width: 7.1%"></span></span>
+            <span class="val">7.1%</span>
+          </li>
+          
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="block repo">
+    <h2>Source and workbook</h2>
+    <p class="sub">The Tableau workbook (.twbx) and README are in the GitHub repository.</p>
+    <a class="btn" href="https://github.com/mahaksahu01/Electric-Vehicle-Market-Performance-Insights" target="_blank" rel="noopener">View on GitHub</a>
+  </section>
+</main>
+
+<footer>Built with Flask and Tableau. Analysis by mahaksahu01.</footer>
+
+</body>
+</html>
