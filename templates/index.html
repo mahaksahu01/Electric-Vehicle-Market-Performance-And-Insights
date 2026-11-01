@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block head %}
+  {% if dashboard_url or story_url %}
+  <script type="module" src="https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js"></script>
+  {% endif %}
+{% endblock %}
+
+{% macro viz(url, label) %}
+  {% if url %}
+    <tableau-viz src="{{ url }}" toolbar="bottom" hide-tabs device="desktop"></tableau-viz>
+  {% else %}
+    <div class="empty">
+      <p><strong>{{ label }} not connected yet.</strong></p>
+      <p>Publish it to Tableau Public, then set the link in <code>app.py</code> or the
+         <code>{{ 'TABLEAU_DASHBOARD_URL' if label == 'Dashboard' else 'TABLEAU_STORY_URL' }}</code> environment variable.</p>
+    </div>
+  {% endif %}
+{% endmacro %}
+
+{% block body %}
+<header class="nav">
+  <a class="brand" href="#top">EV Market Insights</a>
+  <nav>
+    <a href="#dashboard">Dashboard</a>
+    <a href="#story">Story</a>
+    <a href="#insights">Insights</a>
+    <a href="#data">Data</a>
+    <a class="btn small" href="{{ github_url }}" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <h1>What drives the electric vehicle market?</h1>
+    <p class="lede">A Tableau analysis of the global EV market: who sells the most, how demand differs by region, and how battery technology relates to price and range.</p>
+    <div class="meter" role="img" aria-label="9 visualizations built in Tableau">
+      {% for i in range(9) %}<span></span>{% endfor %}
+    </div>
+    <p class="meter-label">9 visualizations, 1 dashboard, 1 data story</p>
+    <div class="actions">
+      <a class="btn" href="#dashboard">Open the dashboard</a>
+      <a class="btn ghost" href="#story">Read the story</a>
+    </div>
+  </section>
+
+  <section id="dashboard" class="block">
+    <h2>Interactive dashboard</h2>
+    <p class="sub">Filter by region, manufacturer and battery type directly in the view.</p>
+    <div class="frame">{{ viz(dashboard_url, 'Dashboard') }}</div>
+  </section>
+
+  <section id="story" class="block">
+    <h2>Data story</h2>
+    <p class="sub">The same findings, told step by step.</p>
+    <div class="frame">{{ viz(story_url, 'Story') }}</div>
+  </section>
+
+  <section id="insights" class="block">
+    <h2>Key insights</h2>
+    <p class="sub">What the analysis of ev_market_test.csv shows.</p>
+    <div class="cards">
+      <article><p class="big">~2%</p><h3>No single leader</h3><p>The top three manufacturers (SurgeWorks, CurrentMobility, ElektraMobility) make up only about 2% of total sales.</p></article>
+      <article><p class="big">4%</p><h3>Similar regional demand</h3><p>Europe is highest at 112.5M units and Africa lowest at 108.3M, a gap of about 4%.</p></article>
+      <article><p class="big">66%</p><h3>Two leading batteries</h3><p>NMC (33.8%) and LFP (32.1%) make up about two-thirds of models. Average range is about 324 km whichever type is used.</p></article>
+      <article><p class="big">0.28</p><h3>Weak price and range link</h3><p>The correlation between price and range is low, so paying more does not reliably buy a longer range.</p></article>
+      <article><p class="big">83&ndash;88M</p><h3>Steady yearly sales</h3><p>Annual sales stay in a narrow band from 2018 to 2026, with no sharp growth or drop.</p></article>
+    </div>
+  </section>
+
+  <section id="data" class="block">
+    <h2>The data behind it</h2>
+    <p class="sub">Figures below are calculated from ev_market_test.csv, the file used in the dashboard.</p>
+    <dl class="facts">
+      <div><dt>Rows in dashboard</dt><dd>{{ '{:,}'.format(summary.test_rows) }}</dd></div>
+      <div><dt>Rows in train file</dt><dd>{{ '{:,}'.format(summary.train_rows) }}</dd></div>
+      <div><dt>Columns</dt><dd>{{ summary.columns }}</dd></div>
+      <div><dt>Manufacturers</dt><dd>{{ summary.manufacturers }}</dd></div>
+      <div><dt>Average price</dt><dd>${{ '{:,}'.format(summary.avg_price_usd) }}</dd></div>
+      <div><dt>Average range</dt><dd>{{ summary.avg_range_km }} km</dd></div>
+    </dl>
+
+    <div class="two">
+      <div>
+        <h3>Annual sales by region (million units)</h3>
+        <ul class="bars">
+          {% for r in summary.regions %}
+          <li>
+            <span class="name">{{ r.name }}</span>
+            <span class="track"><span class="fill" style="width: {{ (r.units_m / max_units * 100)|round(1) }}%"></span></span>
+            <span class="val">{{ r.units_m }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+        <p class="note">Bars start at zero. Regions sit within about 4% of each other in this file.</p>
+      </div>
+      <div>
+        <h3>Battery type share of models</h3>
+        <ul class="bars">
+          {% for b in summary.batteries %}
+          <li>
+            <span class="name">{{ b.name }}</span>
+            <span class="track"><span class="fill alt" style="width: {{ b.share }}%"></span></span>
+            <span class="val">{{ b.share }}%</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="block repo">
+    <h2>Source and workbook</h2>
+    <p class="sub">The Tableau workbook (.twbx) and README are in the GitHub repository.</p>
+    <a class="btn" href="{{ github_url }}" target="_blank" rel="noopener">View on GitHub</a>
+  </section>
+</main>
+
+<footer>Built with Flask and Tableau. Analysis by mahaksahu01.</footer>
+{% endblock %}
